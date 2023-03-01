@@ -66,7 +66,7 @@ public:
 };
 
 int main() {
-    // зчитування даних з файлу
+    // Г§Г·ГЁГІГіГўГ Г­Г­Гї Г¤Г Г­ГЁГµ Г§ ГґГ Г©Г«Гі
     ifstream file("students.txt");
     string line;
     vector<Student> students;
@@ -91,8 +91,9 @@ int main() {
         students.push_back(student);
         return 0;
     }
+}
 
-    // виведення студентів з більше ніж одним талоном у Файл1
+    // ГўГЁГўГҐГ¤ГҐГ­Г­Гї Г±ГІГіГ¤ГҐГ­ГІВіГў Г§ ГЎВіГ«ГјГёГҐ Г­ВіГ¦ Г®Г¤Г­ГЁГ¬ ГІГ Г«Г®Г­Г®Г¬ Гі Г”Г Г©Г«1
     ofstream file1("students_with_multiple_talons.txt");
     for (const auto& student : students) {
         if (student.getTalonCount() > 1) {
@@ -105,7 +106,7 @@ int main() {
     }
     file1.close();
 
-    // знаходження прізвища викладача, який фігурує в найбільшій кількості талонів
+    // Г§Г­Г ГµГ®Г¤Г¦ГҐГ­Г­Гї ГЇГ°ВіГ§ГўГЁГ№Г  ГўГЁГЄГ«Г Г¤Г Г·Г , ГїГЄГЁГ© ГґВіГЈГіГ°ГіВє Гў Г­Г Г©ГЎВіГ«ГјГёВіГ© ГЄВіГ«ГјГЄГ®Г±ГІВі ГІГ Г«Г®Г­ВіГў
     map<string, int> teacherCount;
     for (const auto& student : students) {
         for (const auto& talon : student.getTalons()) {
@@ -121,6 +122,6 @@ int main() {
         }
     }
 
-    // виведення прізвища викладача у Файл2
+    // ГўГЁГўГҐГ¤ГҐГ­Г­Гї ГЇГ°ВіГ§ГўГЁГ№Г  ГўГЁГЄГ«Г Г¤Г Г·Г  Гі Г”Г Г©Г«2
     ofstream file2;
         
