@@ -1,127 +1,101 @@
 #include <iostream>
 #include <fstream>
-#include <string>
 #include <vector>
-#include <map>
+#include <algorithm>
 
 using namespace std;
 
 class Talon {
-private:
-    string name;
-    int score;
-    string teacher;
-
 public:
-    Talon(string name, int score, string teacher) {
-        this->name = name;
-        this->score = score;
-        this->teacher = teacher;
-    }
+    Talon(const string& subj, int score, const string& teacher)
+        : subj_(subj), score_(score), teacher_(teacher) {}
 
-    string getName() const {
-        return name;
-    }
+    const string& GetSubj() const { return subj_; }
+    int GetScore() const { return score_; }
+    const string& GetTeacher() const { return teacher_; }
 
-    int getScore() const {
-        return score;
-    }
-
-    string getTeacher() const {
-        return teacher;
-    }
+private:
+    string subj_;
+    int score_;
+    string teacher_;
 };
 
 class Student {
-private:
-    string name;
-    string group;
-    vector<Talon> talons;
-
 public:
-    Student(string name, string group) {
-        this->name = name;
-        this->group = group;
+    Student(const string& name, const string& group)
+        : name_(name), group_(group) {}
+
+    void AddTalon(const Talon& talon) {
+        talons_.push_back(talon);
     }
 
-    string getName() const {
-        return name;
+    int GetTalonCount() const {
+        return talons_.size();
     }
 
-    string getGroup() const {
-        return group;
+    const Talon& GetTalon(int index) const {
+        return talons_[index];
     }
 
-    void addTalon(Talon talon) {
-        talons.push_back(talon);
-    }
+    const string& GetName() const { return name_; }
+    const string& GetGroup() const { return group_; }
 
-    int getTalonCount() const {
-        return talons.size();
-    }
-
-    vector<Talon> getTalons() const {
-        return talons;
-    }
+private:
+    string name_;
+    string group_;
+    vector<Talon> talons_;
 };
 
 int main() {
-    // ç÷èòóâàííÿ äàíèõ ç ôàéëó
-    ifstream file("students.txt");
-    string line;
-    vector<Student> students;
-    while (getline(file, line)) {
-        string name = line;
-        string group;
-        getline(file, group);
-        Student student(name, group);
-        while (getline(file, line)) {
-            if (line.empty()) {
-                break;
-            }
-            string name = line;
-            int score;
-            string teacher;
-            getline(file, teacher);
-            file >> score;
-            file.ignore();
-            Talon talon(name, score, teacher);
-            student.addTalon(talon);
-        }
-        students.push_back(student);
-        return 0;
+    // Відкриття файлу для зчитування даних про студентів
+    ifstream in("students.txt");
+    if (!in) {
+        cout << "Can't open students.txt" << endl;
+        return 1;
     }
+    return 0;
 }
+    vector<Student> students;
 
-    // âèâåäåííÿ ñòóäåíò³â ç á³ëüøå í³æ îäíèì òàëîíîì ó Ôàéë1
-    ofstream file1("students_with_multiple_talons.txt");
+    // Зчитування даних про студентів
+    while (in) {
+        string name, group;
+        cin >> name >> group;
+
+        Student student(name, group);
+
+        // Зчитування даних про талони студента
+        int talonCount;
+        cin >> talonCount;
+
+        for (int i = 0; i < talonCount; ++i) {
+            string subj, teacher;
+            int score;
+            cin >> subj >> score >> teacher;
+
+            student.AddTalon(Talon(subj, score, teacher));
+        }
+
+        students.push_back(student);
+    }
+
+    // Відкриття файлу для запису списку студентів з більше ніж одним талоном
+    ofstream out1("students_with_multiple_talons.txt");
+    if (!out1) {
+        cout << "Can't open students_with_multiple_talons.txt" << endl;
+        return 1;
+    }
+
+    // Виведення списку студентів з більше ніж одним талоном
     for (const auto& student : students) {
-        if (student.getTalonCount() > 1) {
-            file1 << student.getName() << " (" << student.getGroup() << ")" << endl;
-            for (const auto& talon : student.getTalons()) {
-                file1 << "- " << talon.getName() << " (" << talon.getTeacher() << "): " << talon.getScore() << endl;
+        if (student.GetTalonCount() > 1) {
+            out1 << student.GetName() << " " << student.GetGroup() << " ";
+
+            for (int i = 0; i < student.GetTalonCount(); ++i) {
+                const Talon& talon = student.GetTalon(i);
+                out1 << talon.GetSubj() << " " << talon.GetScore() << " " << talon.GetTeacher() << " ";
             }
-            file1 << endl;
-        }
-    }
-    file1.close();
 
-    // çíàõîäæåííÿ ïð³çâèùà âèêëàäà÷à, ÿêèé ô³ãóðóº â íàéá³ëüø³é ê³ëüêîñò³ òàëîí³â
-    map<string, int> teacherCount;
-    for (const auto& student : students) {
-        for (const auto& talon : student.getTalons()) {
-            teacherCount[talon.getTeacher()]++;
+            out1 << endl;
         }
     }
-    string mostFrequentTeacher;
-    int maxCount = 0;
-    for (const auto& pair : teacherCount) {
-        if (pair.second > maxCount) {
-            mostFrequentTeacher = pair.first;
-            maxCount = pair.second;
-        }
-    }
-
-    // âèâåäåííÿ ïð³çâèùà âèêëàäà÷à ó Ôàéë2
-    ofstream file2;
-        
